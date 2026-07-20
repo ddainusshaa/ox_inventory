@@ -28,6 +28,7 @@ const initialState: State = {
   itemAmount: 0,
   shiftPressed: false,
   isBusy: false,
+  equippedSlot: null,
 };
 
 export const inventorySlice = createSlice({
@@ -54,6 +55,9 @@ export const inventorySlice = createSlice({
     },
     setShiftPressed: (state, action: PayloadAction<boolean>) => {
       state.shiftPressed = action.payload;
+    },
+    setEquippedSlot: (state, action: PayloadAction<number | null>) => {
+      state.equippedSlot = action.payload;
     },
     setContainerWeight: (state, action: PayloadAction<number>) => {
       const container = state.leftInventory.items.find((item) => item.metadata?.container === state.rightInventory.id);
@@ -89,6 +93,7 @@ export const {
   setAdditionalMetadata,
   setItemAmount,
   setShiftPressed,
+  setEquippedSlot,
   setupInventory,
   swapSlots,
   moveSlots,
@@ -100,5 +105,6 @@ export const selectLeftInventory = (state: RootState) => state.inventory.leftInv
 export const selectRightInventory = (state: RootState) => state.inventory.rightInventory;
 export const selectItemAmount = (state: RootState) => state.inventory.itemAmount;
 export const selectIsBusy = (state: RootState) => state.inventory.isBusy;
+export const selectEquippedSlot = (state: RootState) => state.inventory.equippedSlot;
 
 export default inventorySlice.reducer;

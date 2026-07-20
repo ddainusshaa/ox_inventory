@@ -43,12 +43,15 @@ const Inventory: React.FC = () => {
   return (
     <>
       <Fade in={inventoryVisible}>
-        <div className="inventory-wrapper">
-          <LeftInventory />
-          <InventoryControl />
-          <RightInventory />
-          <Tooltip />
-          <InventoryContext />
+        <div className="relative h-full w-full font-sans">
+          <div className="inventory-backdrop" aria-hidden />
+          <div className="relative z-10 flex h-full w-full items-center justify-center gap-[2vh]">
+            <LeftInventory />
+            <InventoryControl />
+            <RightInventory />
+            <Tooltip />
+            <InventoryContext />
+          </div>
         </div>
       </Fade>
       <InventoryHotbar />

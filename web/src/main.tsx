@@ -5,9 +5,12 @@ import { DndProvider } from 'react-dnd';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { store } from './store';
 import App from './App';
+import './styles/theme.css';
 import './index.scss';
 import { ItemNotificationsProvider } from './components/utils/ItemNotifications';
 import { isEnvBrowser } from './utils/misc';
+
+document.documentElement.classList.add('dark');
 
 const root = document.getElementById('root');
 

@@ -1,50 +1,23 @@
 import React, { useMemo } from 'react';
 
-const colorChannelMixer = (colorChannelA: number, colorChannelB: number, amountToMix: number) => {
-  let channelA = colorChannelA * amountToMix;
-  let channelB = colorChannelB * (1 - amountToMix);
-  return channelA + channelB;
-};
-
-const colorMixer = (rgbA: number[], rgbB: number[], amountToMix: number) => {
-  let r = colorChannelMixer(rgbA[0], rgbB[0], amountToMix);
-  let g = colorChannelMixer(rgbA[1], rgbB[1], amountToMix);
-  let b = colorChannelMixer(rgbA[2], rgbB[2], amountToMix);
-  return `rgb(${r}, ${g}, ${b})`;
-};
-
-const COLORS = {
-  // Colors used - https://materialui.co/flatuicolors
-  primaryColor: [231, 76, 60], // Red (Pomegranate)
-  secondColor: [39, 174, 96], // Green (Nephritis)
-  accentColor: [211, 84, 0], // Orange (Oragne)
-};
-
-const WeightBar: React.FC<{ percent: number; durability?: boolean }> = ({ percent, durability }) => {
-  const color = useMemo(
-    () =>
-      durability
-        ? percent < 50
-          ? colorMixer(COLORS.accentColor, COLORS.primaryColor, percent / 100)
-          : colorMixer(COLORS.secondColor, COLORS.accentColor, percent / 100)
-        : percent > 50
-          ? colorMixer(COLORS.primaryColor, COLORS.accentColor, percent / 100)
-          : colorMixer(COLORS.accentColor, COLORS.secondColor, percent / 50),
-    [durability, percent]
-  );
+const DurabilityBar: React.FC<{ percent: number }> = ({ percent }) => {
+  const color = useMemo(() => {
+    if (percent >= 50) return 'var(--dur-good)';
+    if (percent >= 25) return 'var(--dur-warn)';
+    return 'var(--dur-bad)';
+  }, [percent]);
 
   return (
-    <div className={durability ? 'durability-bar' : 'weight-bar'}>
+    <div className="absolute bottom-0 left-0 right-0 h-[0.35vh] overflow-hidden rounded-b-[var(--radius)] bg-muted">
       <div
+        className="h-full transition-[width] duration-300 ease-out"
         style={{
-          visibility: percent > 0 ? 'visible' : 'hidden',
-          height: '100%',
-          width: `${percent}%`,
+          width: `${Math.max(0, Math.min(100, percent))}%`,
           backgroundColor: color,
-          transition: `background ${0.3}s ease, width ${0.3}s ease`,
         }}
-      ></div>
+      />
     </div>
   );
 };
-export default WeightBar;
+
+export default DurabilityBar;

@@ -2,12 +2,16 @@ import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { useDragLayer, useDragDropManager } from 'react-dnd';
 import { DragSource } from '../../typings';
 
+const clearDragSlotClasses = () => {
+  document
+    .querySelectorAll('.inventory-slot--drag-source, .inventory-slot--drag-over')
+    .forEach((element) => element.classList.remove('inventory-slot--drag-source', 'inventory-slot--drag-over'));
+};
+
 const DragPreview: React.FC = () => {
   const manager = useDragDropManager();
   const rootRef = useRef<HTMLDivElement>(null);
 
-  // Only collect item/isDragging here, so we re-render on drag start/end rather than
-  // on every pointer move.
   const { data, isDragging } = useDragLayer((monitor) => ({
     data: monitor.getItem() as DragSource | null,
     isDragging: monitor.isDragging(),
@@ -15,19 +19,36 @@ const DragPreview: React.FC = () => {
 
   useEffect(() => {
     document.body.classList.toggle('inv-dragging', isDragging);
-    return () => document.body.classList.remove('inv-dragging');
+    if (!isDragging) clearDragSlotClasses();
+
+    return () => {
+      document.body.classList.remove('inv-dragging');
+      clearDragSlotClasses();
+    };
   }, [isDragging]);
 
-  // Write the position straight to the node so the preview tracks the cursor 1:1
-  // instead of lagging a render behind it.
   useLayoutEffect(() => {
-    if (!isDragging) return;
+    if (!isDragging || !data?.item) {
+      clearDragSlotClasses();
+      return;
+    }
+
     const monitor = manager.getMonitor();
     const el = rootRef.current;
     const apply = () => {
       const offset = monitor.getClientOffset();
       if (el && offset) {
         el.style.transform = `translate3d(${offset.x}px, ${offset.y}px, 0) translate(-50%, -50%)`;
+
+        clearDragSlotClasses();
+
+        const source = document.querySelector<HTMLElement>(
+          `.inventory-slot[data-inventory-type="${data.inventory}"][data-slot="${data.item.slot}"]`
+        );
+        const hovered = document.elementFromPoint(offset.x, offset.y)?.closest<HTMLElement>('.inventory-slot');
+
+        source?.classList.add('inventory-slot--drag-source');
+        if (hovered && hovered !== source) hovered.classList.add('inventory-slot--drag-over');
       }
     };
     apply();

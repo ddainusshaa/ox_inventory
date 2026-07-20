@@ -47,7 +47,7 @@ const Tooltip: React.FC = () => {
         <FloatingPortal>
           <SlotTooltip
             ref={refs.setFloating}
-            style={{ ...floatingStyles, ...styles }}
+            style={{ ...floatingStyles, ...styles, zIndex: 40 }}
             item={hoverData.item!}
             inventoryType={hoverData.inventoryType!}
           />

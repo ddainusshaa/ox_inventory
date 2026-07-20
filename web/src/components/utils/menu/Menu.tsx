@@ -180,7 +180,11 @@ export const MenuComponent = React.forwardRef<HTMLButtonElement, MenuProps & Rea
             data-open={isOpen ? '' : undefined}
             data-nested={isNested ? '' : undefined}
             data-focus-inside={hasFocusInside ? '' : undefined}
-            className={isNested ? 'context-menu-item' : 'context-menu-list'}
+            className={
+              isNested
+                ? 'flex w-full items-center justify-between rounded-[var(--radius)] border-0 bg-transparent px-[0.8vh] py-[0.6vh] text-left text-[1.2vh] text-popover-foreground outline-none hover:bg-accent hover:text-accent-foreground active:transform-none'
+                : undefined
+            }
             {...getReferenceProps(
               parent.getItemProps({
                 ...props,
@@ -212,11 +216,11 @@ export const MenuComponent = React.forwardRef<HTMLButtonElement, MenuProps & Rea
           <FloatingList elementsRef={elementsRef} labelsRef={labelsRef}>
             {isMounted && (
               <FloatingPortal>
-                <FloatingOverlay lockScroll>
+                <FloatingOverlay lockScroll style={{ zIndex: 45 }}>
                   <FloatingFocusManager context={context} modal={true} initialFocus={refs.floating}>
                     <div
                       ref={refs.setFloating}
-                      className="context-menu-list"
+                      className="flex min-w-[20vh] flex-col gap-[0.2vh] rounded-[var(--radius)] border border-border bg-popover p-[0.4vh] text-popover-foreground shadow-lg outline-none"
                       style={{ ...floatingStyles, ...styles }}
                       {...getFloatingProps()}
                     >
@@ -253,7 +257,7 @@ export const MenuItem = React.forwardRef<
       ref={useMergeRefs([item.ref, forwardedRef])}
       type="button"
       role="menuitem"
-      className="context-menu-item"
+      className="flex w-full items-center justify-between rounded-[var(--radius)] border-0 bg-transparent px-[0.8vh] py-[0.6vh] text-left text-[1.2vh] text-popover-foreground outline-none hover:bg-accent hover:text-accent-foreground active:transform-none disabled:cursor-not-allowed disabled:opacity-50"
       tabIndex={isActive ? 0 : -1}
       disabled={disabled}
       {...menu.getItemProps({

@@ -29,14 +29,14 @@ export const useNuiEvent = <T = any>(action: string, handler: (data: T) => void)
   }, [handler]);
 
   useEffect(() => {
-    const eventListener = (event: MessageEvent<NuiMessageData<T>>) => {
-      const { action: eventAction, data } = event.data;
+    const eventListener = (event: MessageEvent<unknown>) => {
+      const payload = event.data as Partial<NuiMessageData<T>> | null;
 
-      if (savedHandler.current) {
-        if (eventAction === action) {
-          savedHandler.current(data);
-        }
+      if (!payload || typeof payload !== 'object' || payload.action !== action) {
+        return;
       }
+
+      savedHandler.current(payload.data as T);
     };
 
     window.addEventListener('message', eventListener);

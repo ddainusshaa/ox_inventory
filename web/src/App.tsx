@@ -1,9 +1,10 @@
 import InventoryComponent from './components/inventory';
+import { useEffect } from 'react';
 import useNuiEvent from './hooks/useNuiEvent';
 import { Items } from './store/items';
 import { Locale } from './store/locale';
 import { setImagePath } from './store/imagepath';
-import { setupInventory } from './store/inventory';
+import { setupInventory, setEquippedSlot } from './store/inventory';
 import { Inventory } from './typings';
 import { useAppDispatch } from './store';
 import { debugData } from './utils/debugData';
@@ -11,8 +12,30 @@ import DragPreview from './components/utils/DragPreview';
 import { fetchNui } from './utils/fetchNui';
 import { useDragDropManager } from 'react-dnd';
 import KeyPress from './components/utils/KeyPress';
+import enLocales from '../../locales/en.json';
+
+function getUiLocales() {
+  const uiLocales: Record<string, string> = {};
+
+  for (const [key, value] of Object.entries(enLocales)) {
+    if (key.startsWith('ui_') || key === '$' || key === 'ammo_type') {
+      uiLocales[key] = value;
+    }
+  }
+
+  return uiLocales;
+}
 
 debugData([
+  {
+    action: 'init',
+    data: {
+      locale: getUiLocales(),
+      items: {},
+      leftInventory: { id: '', type: '', slots: 0, maxWeight: 0, items: [] },
+      imagepath: '',
+    },
+  },
   {
     action: 'setupInventory',
     data: {
@@ -20,7 +43,7 @@ debugData([
         id: 'test',
         type: 'player',
         slots: 50,
-        label: 'Bob Smith',
+        label: 'John Doe',
         weight: 3000,
         maxWeight: 5000,
         items: [
@@ -29,11 +52,8 @@ debugData([
             name: 'iron',
             weight: 3000,
             metadata: {
-              description: `name: Svetozar Miletic  \n Gender: Male`,
+              description: 'Name: John Doe  \n Sex: Male',
               ammo: 3,
-              mustard: '60%',
-              ketchup: '30%',
-              mayo: '10%',
             },
             count: 5,
           },
@@ -61,9 +81,9 @@ debugData([
       },
       rightInventory: {
         id: 'shop',
-        type: 'crafting',
-        slots: 5000,
-        label: 'Bob Smith',
+        type: 'newdrop',
+        slots: 50,
+        label: 'New drop zone',
         weight: 3000,
         maxWeight: 5000,
         items: [
@@ -72,13 +92,8 @@ debugData([
             name: 'lockpick',
             weight: 500,
             price: 300,
-            ingredients: {
-              iron: 5,
-              copper: 12,
-              powersaw: 0.1,
-            },
             metadata: {
-              description: 'Simple lockpick that breaks easily and can pick basic door locks',
+              description: 'A simple lockpick that breaks easily',
             },
           },
         ],
@@ -104,14 +119,18 @@ const App: React.FC = () => {
     dispatch(setupInventory({ leftInventory }));
   });
 
-  fetchNui('uiLoaded', {});
-
   useNuiEvent('closeInventory', () => {
     manager.dispatch({ type: 'dnd-core/END_DRAG' });
   });
 
+  useNuiEvent<number | null>('setEquippedSlot', (slot) => dispatch(setEquippedSlot(slot ?? null)));
+
+  useEffect(() => {
+    void fetchNui('uiLoaded', {});
+  }, []);
+
   return (
-    <div className="app-wrapper">
+    <div className="h-full w-full text-foreground">
       <InventoryComponent />
       <DragPreview />
       <KeyPress />

@@ -11,7 +11,9 @@ const Fade: React.FC<Props> = (props) => {
 
   return (
     <CSSTransition in={props.in} nodeRef={nodeRef} classNames="transition-fade" timeout={200} unmountOnExit>
-      <span ref={nodeRef}>{props.children}</span>
+      <div ref={nodeRef} className="h-full w-full">
+        {props.children}
+      </div>
     </CSSTransition>
   );
 };

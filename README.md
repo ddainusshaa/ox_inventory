@@ -4,6 +4,8 @@
 
 A complete and modern inventory system for FiveM, providing a flexible slot-based inventory with support for shops, stashes, crafting, and vehicle storage.
 
+<img width="2559" height="1438" alt="ox_inventory" src="https://cdn.ddainusshaa.dev/ox_inventory.png" />
+
 [![](https://img.shields.io/github/downloads/overextended/ox_inventory/total?style=for-the-badge&logo=github)](https://github.com/overextended/ox_inventory/releases/latest/download/ox_inventory.zip)
 [![](https://img.shields.io/github/downloads/overextended/ox_inventory/latest/total?style=for-the-badge&logo=github)](https://github.com/overextended/ox_inventory/releases/latest/download/ox_inventory.zip)
 [![](https://img.shields.io/github/v/release/overextended/ox_inventory?style=for-the-badge&logo=github)](https://github.com/overextended/ox_inventory/releases/latest/)\
