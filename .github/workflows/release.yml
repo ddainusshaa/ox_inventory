@@ -4,11 +4,19 @@ on:
   push:
     tags:
       - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (e.g. v2.47.10)"
+        required: true
+        type: string
 
 jobs:
   create-release:
     if: github.actor_id != 278903378
     runs-on: ubuntu-latest
+    env:
+      RELEASE_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.version || github.ref_name }}
     steps:
       - name: Install zip
         run: sudo apt install zip
@@ -35,7 +43,7 @@ jobs:
       - name: Bump manifest version
         run: bun run .github/actions/bump-manifest-version.js
         env:
-          TGT_RELEASE_VERSION: ${{ github.ref_name }}
+          TGT_RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
 
       - name: Push version bump change
         uses: EndBug/add-and-commit@v9
@@ -43,7 +51,7 @@ jobs:
           add: fxmanifest.lua
           push: true
           default_author: github_actions
-          message: "chore: bump version to ${{ github.ref_name }}"
+          message: "chore: bump version to ${{ env.RELEASE_VERSION }}"
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -67,10 +75,11 @@ jobs:
         uses: "marvinpinto/action-automatic-releases@v1.2.1"
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: ${{ env.RELEASE_VERSION }}
           prerelease: false
           files: ox_inventory.zip
 
       - name: Update tag
         uses: EndBug/latest-tag@v1
         with:
-          ref: ${{ github.ref_name }}
+          ref: ${{ env.RELEASE_VERSION }}
